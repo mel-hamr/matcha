@@ -1,4 +1,5 @@
 const express = require("express");
+const crud = require("./db/crud")
 const dataBase = require("./db/createDB")
 const app = express();
 const port = 3000;
@@ -8,6 +9,8 @@ app.get("/", (req, res) => {
   console.log("hello world");
 });
 
+app.post("/add", crud.createRecord);
+
 app.get("/start/intiate", async (req, res) => {
     await dataBase.createDatabase()
     await dataBase.createTables()
@@ -15,3 +18,8 @@ app.get("/start/intiate", async (req, res) => {
 });
 
 app.listen(port, () => console.log("hello from server port 3000"));
+
+// how to get body form request in express ?
+
+
+

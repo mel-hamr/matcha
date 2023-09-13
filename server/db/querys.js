@@ -4,7 +4,7 @@ const createTable = `
 CREATE TABLE IF NOT EXISTS "users" (
     "id" SERIAL,
     "name" VARCHAR(100) NOT NULL,
-    "role" VARCHAR(15) NOT NULL,
+    "role" VARCHAR(255) NOT NULL,
     PRIMARY KEY ("id")
 );`;
 module.exports = {

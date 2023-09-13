@@ -1,5 +1,6 @@
 const { Client } = require("pg");
 const querys = require("./querys");
+
 const postgresClient = new Client({
   host: "localhost",
   user: "mel-hamr",
@@ -43,6 +44,8 @@ const createTables = async () => {
   }
 };
 
+
 module.exports = {
-  createDatabase,createTables
+  createDatabase,createTables,matchaClient
 };
+// how to create a express get request ?
