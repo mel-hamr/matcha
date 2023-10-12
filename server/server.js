@@ -1,11 +1,16 @@
 const express = require("express");
-const crud = require("./db/crud")
-const dataBase = require("./db/createDB")
+const crud = require("./src/data/db/crud")
+const dataBase = require("./src/data/db/createDB")
+const userRouter =require('./src/routes/user/route')
+var bodyParser = require('body-parser');
+
 const app = express();
 const port = 3000;
 
-app.use(express.json())
+// body parser
+app.use(bodyParser.json())
 
+app.use('/user' , userRouter)
 app.get("/", (req, res) => {
   res.send("hello world");
   console.log("hello world");
@@ -20,36 +25,11 @@ class tickersDTO {
   baseAsset
   quoteAsset
 }
-
-app.post("/test", (req ,res) =>{
-  let urlString = "wss://stream.binance.com:443/"
-  let ticker = [{
-    platform :"binance",
-    ticker : "BNBUSDT",
-    baseAsset : "BNB",
-    quoteAsset : "USDT"
-  },
-  {
-    platform :"binance",
-    ticker : "BTCUSDT",
-    baseAsset : "BTC",
-    quoteAsset : "USDT"
-  },]
-  ticker.forEach((e)=>{
-    urlString = urlString + e.ticker.toLowerCase() + "@kline_1s/"
-  })
-  console.log(urlString)
-  res.send("test completed")
-  //wss://stream.binance.com:443<symbol>@kline_<interval>
-
-});
-
-
 app.get("/start/intiate", async (req, res) => {
     await dataBase.createDatabase()
     await dataBase.createTables()
   res.status(200).send("data base created succsesfully")
-});
+});  
 
 app.listen(port, () => console.log("hello from server port 3000"));
 

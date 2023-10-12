@@ -16,6 +16,7 @@ const createTable = `
     "fame_rating" INT,
     "latitude" VARCHAR(255),
     "longitude" VARCHAR(255),
+    "verified" BOOLEN,
     PRIMARY KEY ("id")
   );
   CREATE TABLE views (
@@ -32,23 +33,3 @@ module.exports = {
   createTable,
 };
 
-// const createTable = ` 
-// CREATE TABLE IF NOT EXISTS "users" (
-//     "id" SERIAL,
-//     "emailAddress" VARCHAR(255) NOT NULL,
-//     "lastName" VARCHAR(255) NOT NULL,
-//     "firstName" VARCHAR(255) NOT NULL,
-//     "password" VARCHAR(255) NOT NULL,
-//     "username" VARCHAR(255) NOT NULL,
-//     "gender" VARCHAR(255),
-//     "sexualPreferences" VARCHAR(255),
-//     "biography" VARCHAR(255),
-//     "images" VARCHAR(255)[],
-//     "tags" VARCHAR(255)[],
-//     "fameRating" INT,
-//     "latitude" VARCHAR(255),
-//     "longitude" VARCHAR(255),
-//     "views" INT,
-//     FOREIGN KEY (views) REFERENCES users(id),
-//     PRIMARY KEY ("id")
-// );`;
