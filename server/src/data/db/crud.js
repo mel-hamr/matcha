@@ -27,7 +27,7 @@ async function getAllRecords(table) {
   return db.any(query);
 }
 
-async function getRecordById(table, id) {
+async function getRecordById(table, id,res) {
   const query = `SELECT * FROM ${table} WHERE id = $1`;
   return db.oneOrNone(query, id);
 }

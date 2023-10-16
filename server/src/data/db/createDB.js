@@ -1,5 +1,5 @@
 const { Client } = require("pg");
-const querys = require("./querys");
+const querys = require("./queries");
 
 const postgresClient = new Client({
   host: "localhost",

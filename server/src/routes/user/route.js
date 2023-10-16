@@ -2,7 +2,7 @@ const express = require("express");
 const generalCrude = require("../../data/db/crud");
 const userSignInDTO = require("../DTO/user/userSignInDTO");
 const router = express.Router();
-const userSerivce = require("../../services/user/userService");
+const userSerivce = require("../../services/user/user-service");
 
 router.post("/signup", async (req, res) => {
   userDTO = new userSignInDTO(req.body);

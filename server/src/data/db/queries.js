@@ -7,7 +7,7 @@ const createTable = `
     "last_name" VARCHAR(255) NOT NULL,
     "first_name" VARCHAR(255) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
-    "username" VARCHAR(255) NOT NULL,
+    "username" VARCHAR(255) NOT NULL UNIQUE,
     "gender" VARCHAR(255),
     "sexual_preference" VARCHAR(255),
     "biography" VARCHAR(255),
@@ -19,17 +19,22 @@ const createTable = `
     "verified" BOOLEAN,
     PRIMARY KEY ("id")
   );
-  CREATE TABLE views (
+  CREATE TABLE IF NOT EXISTS "views" (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id),
     view_id INT REFERENCES users(id),
     UNIQUE (user_id, view_id)
   );
-
+  CREATE TABLE IF NOT EXISTS "sessions" (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    "username" VARCHAR(255), 
+    "valid" BOOLEAN,
+  );
 `;
+
 module.exports = {
   checkDbExist,
   createDb,
   createTable,
 };
-
