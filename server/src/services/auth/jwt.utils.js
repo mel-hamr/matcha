@@ -5,16 +5,11 @@ const privateKey = process.env.JWT_SECRET;
 
 const publicKey = process.env.JWT_PUBLIC_KEY;
 
-const signJWT = (user) => {
+const signJWT = (payload, expiresIn) => {
     const token = jwt.sign(
-        {
-        iss: "Matcha",
-        sub: user.username,
-        iat: new Date().getTime(),
-        exp: new Date().setDate(new Date().getDate() + 60000),
-        },
+        payload,
         privateKey,
-        { algorithm: "RS256"}
+        { algorithm: "RS256" ,expiresIn: expiresIn}
     );
     return token;
 }

@@ -17,6 +17,7 @@ const createTable = `
     "latitude" VARCHAR(255),
     "longitude" VARCHAR(255),
     "verified" BOOLEAN,
+    is_online BOOLEAN,
     PRIMARY KEY ("id")
   );
   CREATE TABLE IF NOT EXISTS "views" (
@@ -25,11 +26,18 @@ const createTable = `
     view_id INT REFERENCES users(id),
     UNIQUE (user_id, view_id)
   );
-  CREATE TABLE IF NOT EXISTS "sessions" (
+  CREATE TABLE IF NOT EXISTS sessions (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id),
-    "username" VARCHAR(255), 
-    "valid" BOOLEAN,
+    username VARCHAR(255),
+    valid BOOLEAN
+  );
+  CREATE TABLE IF NOT EXISTS user_verification (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    unique_string VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP + INTERVAL '1 day'
   );
 `;
 

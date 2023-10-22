@@ -26,7 +26,7 @@ class tickersDTO {
   quoteAsset
 }
 app.get("/start/intiate", async (req, res) => {
-    await dataBase.createDatabase()
+    // await dataBase.createDatabase()
     await dataBase.createTables()
   res.status(200).send("data base created succsesfully")
 });  

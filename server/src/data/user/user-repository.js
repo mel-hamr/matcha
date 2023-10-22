@@ -4,14 +4,15 @@ const userQueries = require("./user-queries");
 
 const getUserByUsername = async (username, res) => {
   try {
-    matchaClient.connect();
+    if (!matchaClient._connected) matchaClient.connect();
     let result = await matchaClient.query(userQueries.getByUsername, [
       username,
     ]);
-    console.log(user);
     return result.rows[0];
   } catch (e) {
-    res.status(400).send(e.message);
+    console.log(e);
+    res.status(400);
+    return null
   }
 };
 

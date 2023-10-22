@@ -17,6 +17,7 @@ const createRecord = async (user, table, res) => {
     dota = await matchaClient.query(query, values);
     return dota.rows[0];
   } catch (e) {
+    console.log(`error from create record ${table} :`, e.message);
     res.status(400).send(e.message);
   }
 };
@@ -27,9 +28,20 @@ async function getAllRecords(table) {
   return db.any(query);
 }
 
-async function getRecordById(table, id,res) {
+async function getRecordById(table, id, res) {
   const query = `SELECT * FROM ${table} WHERE id = $1`;
-  return db.oneOrNone(query, id);
+  if (!matchaClient._connected) matchaClient.connect().catch((e) => {});
+  let result = await matchaClient.query(query, [id]);
+  return result.rows[0];
+}
+
+async function getRecordBy(table, columnName, columnValue, res) {
+  const query = `SELECT * FROM ${table} WHERE ${columnName} = $1`;
+  if (!matchaClient._connected) matchaClient.connect().catch((e) => {});
+  let result = await matchaClient.query(query, [columnValue]).catch((e) => {
+    res.status(400).send(e.message);
+  });
+  return result.rows[0];
 }
 
 // Update
@@ -60,4 +72,6 @@ module.exports = {
   getAllRecords,
   updateRecord,
   deleteRecord,
+  getRecordById,
+  getRecordBy
 };
