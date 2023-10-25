@@ -2,6 +2,7 @@ const generalCrude = require("../../data/db/crud");
 const auth = require("../auth/jwt.utils");
 const userRepo = require("../../data/user/user-repository");
 const verifocationEmailHelper = require("./helper/verification-email-helper");
+const bcrypt = require("bcrypt");
 
 const userSignIn = async (userWo, res) => {
   let newUser;
@@ -52,12 +53,50 @@ const verifyUserEmail = async (userId, uniqueString, res) => {
     userId,
     res
   );
+  // check if user verification record exists
   if (user_verification) {
-    
+    //check if user verification record is expiret
+    if (user_verification.expires_at < new Date()) {
+      generalCrude.deleteRecord("user_verification", user_verification.id, res);
+      generalCrude.deleteRecord("users", userId, res);
+      let message = "Verification link has expired. Please sign up again.";
+      res.redirect(`/user/verified/?error=true&message=${message}`);
+    }
+    // if user verification record is not expired
+    else {
+      bcrypt
+        .compare(uniqueString, user_verification.unique_string)
+        .then((result) => {
+          if (result) {
+            generalCrude.updateRecord(
+              "users",
+              userId,
+              {
+                verified: true,
+              },
+              res
+            );
+            generalCrude.deleteRecord(
+              "user_verification",
+              user_verification.id,
+              res
+            );
+            res.redirect(`/user/verified/`);
+          } else {
+            let message =
+              " invalid verification details passed. Check your inbox";
+            res.redirect(`/user/verified/?error=true&message=${message}`);
+          }
+        })
+        .catch((error) => {
+          let message = "An error occured while comapring unique string";
+          res.redirect(`/user/verified/?error=true&message=${message}`);
+        });
+    }
   } else {
     let message =
       "Account record doesn't exist or has been verified already. Plaese sign up or login.";
-    res.redirect(`/user/verified/error=true&message=${message}`);
+    res.redirect(`/user/verified/?error=true&message=${message}`);
   }
 };
 

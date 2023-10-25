@@ -45,26 +45,27 @@ async function getRecordBy(table, columnName, columnValue, res) {
 }
 
 // Update
-const updateRecord = (req, res) => {
-  const id = req.body.id;
-  const table = req.body.table;
-  const data = req.body.data;
-  const columns = Object.keys(data);
-  const values = Object.values(data);
+const updateRecord = async (table, id, updateObject, res) => {
+  const columns = Object.keys(updateObject);
+  const values = Object.values(updateObject);
   const setClause = columns.map((col, i) => `${col} = $${i + 2}`).join(", ");
 
   const query = `UPDATE ${table} SET ${setClause} WHERE id = $1 RETURNING *`;
   if (!matchaClient._connected) matchaClient.connect();
-  matchaClient.query(query, [id, ...values], async (error, result) => {
-    if (error) throw error;
-    res.status(200).send(result.rows);
+  let result = await matchaClient.query(query, [id, ...values]).catch((e) => {
+    res.status(400).send(e.message);
   });
+  return result.rows[0];
 };
 
 // Delete
-async function deleteRecord(table, id) {
+async function deleteRecord(table, id, res) {
   const query = `DELETE FROM ${table} WHERE id = $1 RETURNING *`;
-  return db.oneOrNone(query, id);
+  if (!matchaClient._connected) matchaClient.connect().catch((e) => {});
+  let result = await matchaClient.query(query, [id]).catch((e) => {
+    res.status(400).send(e.message);
+  });
+  return result.rows[0];
 }
 
 module.exports = {
@@ -73,5 +74,5 @@ module.exports = {
   updateRecord,
   deleteRecord,
   getRecordById,
-  getRecordBy
+  getRecordBy,
 };

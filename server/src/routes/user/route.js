@@ -24,7 +24,7 @@ router.get("/verify-email/:id/:uniqueString", async (req, res) => {
 });
 
 router.get("/verified" , (req,res) => {
-  res.sendFile(path.join(__dirname + "../../common/views/verified.html"))
+  res.sendFile(path.join(__dirname + "../../../common/views/verified.html"))
 })
 
 router.post("/login", (req, res) => {});
