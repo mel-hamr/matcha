@@ -12,7 +12,7 @@ const getUserByUsername = async (username, res) => {
   } catch (e) {
     console.log(e);
     res.status(400);
-    return null
+    return null;
   }
 };
 

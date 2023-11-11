@@ -3,6 +3,7 @@ const auth = require("../auth/jwt.utils");
 const userRepo = require("../../data/user/user-repository");
 const verifocationEmailHelper = require("./helper/verification-email-helper");
 const bcrypt = require("bcrypt");
+const axios = require("axios");
 
 const userSignIn = async (userWo, res) => {
   let newUser;
@@ -10,39 +11,54 @@ const userSignIn = async (userWo, res) => {
   user = await userRepo.getUserByUsername(userWo.username, res);
   if (user) {
     res.status(400).send("user already exist");
+    return
+  }
+
+  if(!userWo.lantiude && !userWo.longitude){
+    const firstResponse = await axios.get('https://httpbin.org/ip');
+    const publicIpAddress = firstResponse.data.origin;
+    const response = await fetch(`http://ip-api.com/json/${publicIpAddress}`);
+    data = await response.json();
+    userWo.latitude = data.lat;
+    userWo.longitude = data.lon;
   }
   newUser = await generalCrude.createRecord(userWo, "users", res);
   if (newUser) {
-    let accessToken = auth.signJWT(
-      {
-        username: userWo.username,
-        email_address: userWo.email_address,
-        user_id: newUser.id,
-      },
-      "5m"
-    );
-    let session = await generalCrude.createRecord(
-      { user_id: newUser.id, username: newUser.username, valid: true },
-      "sessions",
-      res
-    );
-    console.log(session);
-    let refreshToken = auth.signJWT({ session_id: session.id }, "1d");
+    console.log("====================================");
+    console.log(newUser);
+    
+    // let accessToken = auth.signJWT(
+    //   {
+    //     username: userWo.username,
+    //     email_address: userWo.email_address,
+    //     user_id: newUser.id,
+    //   },
+    //   "5m"
+    // );
+    // let session = await generalCrude.createRecord(
+    //   { user_id: newUser.id, username: newUser.username, valid: true },
+    //   "sessions",
+    //   res
+    // );
+    // console.log(session);
+    // let refreshToken = auth.signJWT({ session_id: session.id }, "1d");
 
-    // set access token in cookie
-    res.cookie("accessToken", accessToken, {
-      maxAge: 300000, // 5 minutes
-      httpOnly: true,
-    });
-    // set refresh token in cookie
-    res.cookie("refreshToken", refreshToken, {
-      maxAge: 60 * 60 * 24 * 1000, // 1 year
-      httpOnly: true,
-    });
-    verifocationEmailHelper.sendVerificationEmail(newUser, res);
-    res.status(200).send(session);
+    // // set access token in cookie
+    // res.cookie("accessToken", accessToken, {
+    //   maxAge: 300000, // 5 minutes
+    //   httpOnly: true,
+    // });
+    // // set refresh token in cookie
+    // res.cookie("refreshToken", refreshToken, {
+    //   maxAge: 60 * 60 * 24 * 1000, // 1 year
+    //   httpOnly: true,
+    // });
+    verifocationEmailHelper.sendVerificationEmail(newUser, res);  
+    res.status(200).send({ message: "user created successfully"});
+    // res.redirect('http://localhost:4200')
   } else {
     res.status(400).send("error happend while creating user");
+    return
   }
 };
 

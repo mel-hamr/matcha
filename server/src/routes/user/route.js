@@ -7,6 +7,7 @@ const userSignInDTO = require("../DTO/user/userSignInDTO");
 
 router.post("/signup", async (req, res) => {
   userDTO = new userSignInDTO(req.body);
+  console.log(userDTO);
   let { status, message } = userDTO.checkAllFields(res);
   if (status) {
     await userSerivce.userSignIn(userDTO, res);
@@ -22,10 +23,10 @@ router.get("/verify-email/:id/:uniqueString", async (req, res) => {
   const uniqueString = req.params.uniqueString;
   await userSerivce.verifyUserEmail(id, uniqueString, res);
 });
-
-router.get("/verified" , (req,res) => {
-  res.sendFile(path.join(__dirname + "../../../common/views/verified.html"))
-})
+0;
+router.get("/verified", (req, res) => {
+  res.sendFile(path.join(__dirname + "../../../common/views/verified.html"));
+});
 
 router.post("/login", (req, res) => {});
 

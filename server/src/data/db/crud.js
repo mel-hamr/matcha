@@ -18,6 +18,7 @@ const createRecord = async (user, table, res) => {
     return dota.rows[0];
   } catch (e) {
     console.log(`error from create record ${table} :`, e.message);
+    
     res.status(400).send(e.message);
   }
 };
