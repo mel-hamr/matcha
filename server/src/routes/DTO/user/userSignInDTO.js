@@ -13,6 +13,8 @@ class userSignInDTO {
   }
 
   checkAllFields() {
+    if(this.email_address)
+      this.email_address = this.email_address.toLowerCase();
     if (
       !this.email_address ||
       !this.last_name ||

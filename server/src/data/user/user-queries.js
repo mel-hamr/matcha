@@ -1,3 +1,3 @@
-const getByUsername  = `SELECT * FROM users WHERE username = $1`
+const getByUsernameOrEmail  = `SELECT * FROM users WHERE username = $1 OR email_address = $2`
 
-module.exports = { getByUsername }
+module.exports = { getByUsernameOrEmail }

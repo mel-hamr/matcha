@@ -7,15 +7,15 @@ const userSignInDTO = require("../DTO/user/userSignInDTO");
 
 router.post("/signup", async (req, res) => {
   userDTO = new userSignInDTO(req.body);
-  console.log(userDTO);
   let { status, message } = userDTO.checkAllFields(res);
+  console.log(userDTO);
   if (status) {
     await userSerivce.userSignIn(userDTO, res);
   } else res.status(400).send(message);
 });
 
 router.get("/getUser", async (req, res) => {
-  res.send(await generalCrude.getRecordById("users", req.body.id, res));
+  res.send(await generalCrude.getRecordById("users", req.body.id));
 });
 
 router.get("/verify-email/:id/:uniqueString", async (req, res) => {

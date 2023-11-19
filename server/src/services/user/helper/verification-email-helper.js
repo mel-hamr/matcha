@@ -42,7 +42,6 @@ const sendVerificationEmail = async ({ id, email_address }, res) => {
             unique_string: hashedUniqueString,
           },
           "user_verification",
-          res
         )
         .then((data) => {
           transporter.sendMail(mailOptions, (error, info) => {

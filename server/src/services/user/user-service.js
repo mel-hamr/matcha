@@ -8,9 +8,12 @@ const axios = require("axios");
 const userSignIn = async (userWo, res) => {
   let newUser;
   let user;
-  user = await userRepo.getUserByUsername(userWo.username, res);
+  user = await userRepo.getUserByUsernameOrEmail(userWo.username,userWo.email_address);
   if (user) {
-    res.status(400).send("user already exist");
+    if(user.email_address == userWo.email_address)
+      res.status(400).send("email address already used");
+    else if(user.username == userWo.username)
+        res.status(400).send("username already used");
     return
   }
 
@@ -22,7 +25,7 @@ const userSignIn = async (userWo, res) => {
     userWo.latitude = data.lat;
     userWo.longitude = data.lon;
   }
-  newUser = await generalCrude.createRecord(userWo, "users", res);
+  newUser = await generalCrude.createRecord(userWo, "users");
   if (newUser) {
     console.log("====================================");
     console.log(newUser);
@@ -67,14 +70,13 @@ const verifyUserEmail = async (userId, uniqueString, res) => {
     "user_verification",
     "user_id",
     userId,
-    res
   );
   // check if user verification record exists
   if (user_verification) {
     //check if user verification record is expiret
     if (user_verification.expires_at < new Date()) {
-      generalCrude.deleteRecord("user_verification", user_verification.id, res);
-      generalCrude.deleteRecord("users", userId, res);
+      generalCrude.deleteRecord("user_verification", user_verification.id);
+      generalCrude.deleteRecord("users", userId);
       let message = "Verification link has expired. Please sign up again.";
       res.redirect(`/user/verified/?error=true&message=${message}`);
     }
@@ -89,13 +91,11 @@ const verifyUserEmail = async (userId, uniqueString, res) => {
               userId,
               {
                 verified: true,
-              },
-              res
+              }
             );
             generalCrude.deleteRecord(
               "user_verification",
-              user_verification.id,
-              res
+              user_verification.id
             );
             res.redirect(`/user/verified/`);
           } else {
