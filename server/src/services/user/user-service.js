@@ -116,4 +116,54 @@ const verifyUserEmail = async (userId, uniqueString, res) => {
   }
 };
 
+const userLogin = async (userCredentials, res) => {
+  let user = await generalCrude.getRecordBy("users","username",userCredentials.username);
+  if (user) {
+    if (user.verified) {
+      bcrypt
+        .compare(userCredentials.password, user.password)
+        .then((result) => {
+          if (result) {
+            let accessToken = auth.signJWT(
+              {
+                username: user.username,
+                email_address: user.email_address,
+                user_id: user.id,
+              },
+              "5m"
+            );
+            let session = generalCrude.createRecord(
+              { user_id: user.id, username: user.username, valid: true },
+              "sessions",
+              res
+            );
+            let refreshToken = auth.signJWT({ session_id: session.id }, "1d");
+
+            // set access token in cookie
+            res.cookie("accessToken", accessToken, {
+              maxAge: 300000, // 5 minutes
+              httpOnly: true,
+            });
+            // set refresh token in cookie
+            res.cookie("refreshToken", refreshToken, {
+              maxAge: 60 * 60 * 24 * 1000, // 1 year
+              httpOnly: true,
+            });
+            res.status(200).send({ message: "user logged in successfully" });
+          } else {
+            res.status(400).send("wrong password");
+          }
+        })
+        .catch((error) => {
+          res.status(400).send("error happend while comparing password");
+        });
+    } else {
+      res.status(400).send("user not verified");
+    }
+  } else {
+    res.status(400).send("user not found");
+  }
+
+}
+
 module.exports = { userSignIn, verifyUserEmail };

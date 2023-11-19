@@ -5,6 +5,14 @@ const userSerivce = require("../../services/user/user-service");
 const path = require("path");
 const userSignInDTO = require("../DTO/user/userSignInDTO");
 
+
+
+router.post("/signup", async (req, res) => {
+  let {username,password} = req.body;
+   
+});
+
+
 router.post("/signup", async (req, res) => {
   userDTO = new userSignInDTO(req.body);
   let { status, message } = userDTO.checkAllFields(res);
